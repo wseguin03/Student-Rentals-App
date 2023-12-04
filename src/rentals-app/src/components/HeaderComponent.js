@@ -19,8 +19,8 @@ function HeaderComponent() {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav>
-            <Nav.Link href = '/mylists'>
-              <Link to = '/mylists'>
+            <Nav.Link href = '/showing'>
+              <Link to = '/showing'>
                 Book a Showing
                 </Link>
               </Nav.Link>
