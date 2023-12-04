@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Form, Dropdown } from 'react-bootstrap';
+import { Container, Form, Dropdown, Button, Card, Row, Col} from 'react-bootstrap';
 import MainScreenComponent from './MainScreenComponent';
 import axios from 'axios';
 
@@ -12,6 +12,7 @@ function ShowingComponent() {
     const [distanceToCampus, setDistanceToCampus] = useState('');
     const userInfo = JSON.parse(localStorage.getItem('userInfo'));
     const [userData, setUserData] = useState(null);
+    const [properties, setProperties] = useState([]);
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -75,12 +76,17 @@ const fetchFilteredProperties = async () => {
         });
 
         console.log(response.data);
+        setProperties(response.data);
+
     } catch (error) {
         console.error('Failed to fetch filtered properties:', error);
     }
 };
 
-fetchFilteredProperties();
+useEffect(() => {
+    fetchFilteredProperties();
+}, [priceRange, numBedrooms, numBathrooms, propertyType, distanceToCampus]);
+
     return (
         <Container>
             <MainScreenComponent title='Book a Showing'>
@@ -101,7 +107,7 @@ fetchFilteredProperties();
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                                 <Dropdown.Item eventKey="Town house">Town house</Dropdown.Item>
-                                <Dropdown.Item eventKey="Apartment">Apartment</Dropdown.Item>
+                                <Dropdown.Item eventKey="Appartment">Apartment</Dropdown.Item>
                                 <Dropdown.Item eventKey="House">House</Dropdown.Item>
                             </Dropdown.Menu>
                         </Dropdown>
@@ -165,9 +171,32 @@ fetchFilteredProperties();
                                                     )}
                                                 </Dropdown.Menu>
                                             </Dropdown>
+                                            <br />
+                                            
                                         </Form.Group>
                                     </Form>
+                                        <Row>
+                                            {properties.map((property) => (
+                                                <Col md={3} key={property.propertyID}>
+                                                    <Card style={{ width: '18rem' }}>
+                                                        <Card.Body>
+                                                            <Card.Title>{property.propertyType}</Card.Title>
+                                                            <Card.Subtitle className="mb-2 text-muted">{property.address}</Card.Subtitle>
+                                                            <Card.Text>
+                                                                Price: {property.price} <br />
+                                                                Bedrooms: {property.numBedrooms} <br />
+                                                                Bathrooms: {property.numBathrooms} <br />
+                                                                Distance to Campus: {property.distanceToCampus}km
+                                                            </Card.Text>
+                                                            <Button variant="primary">Book a Showing</Button>
+                                                        </Card.Body>
+                                                    </Card>
+                                                    <br></br>
+                                                </Col>
+                                            ))}
+                                        </Row>
                                 </MainScreenComponent>
+                                
                             </Container>
                         );
                     }
