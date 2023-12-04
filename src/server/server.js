@@ -50,6 +50,28 @@ app.use(express.json());
 
 // Connect to the database
 
+router.route('/login')
+  // user login
+  .post(async (req, res) => {
+
+    const sql = `SELECT username, password FROM ${req.body.userType} WHERE username = '${req.body.username}'`;
+
+    db.query(sql, (err, result) => {
+      if (err) {
+        console.log('MySQL query error: ', err);
+        return res.status(500).send('Internal Server Error');
+      }
+
+      else if (result.length === 0) return res.status(404).send('Username not found!');
+
+      else if (result[0].password !== req.body.password) return res.status(401).send('Incorrect password!');
+
+      return res.json('Login successful!');
+    });
+  })
+
+
+// tenant functionality
 router.route('/tenant')
   // get tenant info
   .get(async (req, res) => {
@@ -63,47 +85,245 @@ router.route('/tenant')
       } else if (result.length === 0) return res.status(404).send('Username not found!');
 
       return res.json(result);
-    })
+    });
+  })
+  // add new tenant
+  .post(async (req, res) => {
+
+    const sql = `INSERT INTO Tenant (username, password, fName, lName, email, phoneNum, DOB, homeAddress)
+                VALUES ('${req.body.username}', '${req.body.password}', '${req.body.fName}', '${req.body.lName}', '${req.body.email}', '${req.body.phoneNum}', '${req.body.dob}', '${req.body.homeAddress}')`;
+
+    db.query(sql, (err, result) => {
+      if (err) {
+        console.log('MySQL query error: ', err);
+        if (err.code === 'ER_DUP_ENTRY') return res.status(409).send('Username already exists!');
+        return res.status(500).send('Internal Server Error');
+      }
+
+      return res.json('Tenant added!');
+    });
   })
   // update tenant info
   .put(async (req, res) => {
-    console.log(req.query.username)
-    const sql = `UPDATE Tenant SET fName = '${req.body.fName}', lName = '${req.body.lName}', email = '${req.body.email}', phoneNum = '${req.body.phone}', DOB = '${req.body.dob}', homeAddress = '${req.body.homeAddress} WHERE username = '${req.query.username}'`;
+
+    const sql = `UPDATE Tenant SET fName = '${req.body.fName}', lName = '${req.body.lName}', email = '${req.body.email}', phoneNum = '${req.body.phoneNum}', DOB = '${req.body.dob}', homeAddress = '${req.body.homeAddress}' WHERE username = '${req.query.username}'`;
 
     db.query(sql, (err, result) => {
       if (err) {
         console.log('MySQL query error: ', err);
+
         return res.status(500).send('Internal Server Error');
-      } 
-      console.log(result);
-      return res.json(result);
-    })
+      }
+
+      else if (result.changedRows === 0) return res.status(404).send('Username not found!');
+
+      return res.json('Tenant info updated!');
+    });
   });
 
-router.route('/login')
-  // user login
-  .post(async (req, res) => {
 
-    const sql = `SELECT username, password FROM ${req.body.userType} WHERE username = '${req.body.username}'`;
+// property listing functionality
+router.route('/property')
+  // get property info
+  .get(async (req, res) => {
+
+    const sql = `SELECT * FROM PropertyListing WHERE propertyID = ${req.query.id}`;
 
     db.query(sql, (err, result) => {
       if (err) {
         console.log('MySQL query error: ', err);
         return res.status(500).send('Internal Server Error');
-      } 
+      }
 
-      else if (result.length === 0) return res.status(404).send('Username not found!');
+      else if (result.length === 0) return res.status(404).send('Property not found!');
 
-      else if (result[0].password !== req.body.password) return res.status(401).send('Incorrect password!'); 
-
-      return res.json({userType: req.body.userType, username: result[0].username, message: 'Login Successful!'});
-    })
+      return res.json(result);
+    });
   })
+  // add new property listing
+  .post(async (req, res) => {
 
+    const sql = `INSERT INTO PropertyListing (price, numBedrooms, numBathrooms, propertyType, address, dateListed, isAvailable, distanceToCampus, propManUser) 
+                VALUES (${req.body.price}, ${req.body.numBedrooms}, ${req.body.numBathrooms}, '${req.body.propertyType}', '${req.body.address}', '${req.body.dateListed}', ${req.body.isAvailable}, ${req.body.distanceToCampus}, '${req.body.propManUser}')`;
+
+    db.query(sql, (err, result) => {
+      if (err) {
+        console.log('MySQL query error: ', err);
+        return res.status(500).send('Internal Server Error');
+      }
+
+      return res.json('Property added!');
+    });
+  })
+  // update property info
+  .put(async (req, res) => {
+
+    const sql = `UPDATE PropertyListing SET price = ${req.body.price}, numBedrooms = ${req.body.numBedrooms}, numBathrooms = ${req.body.numBathrooms}, propertyType = '${req.body.propertyType}', address = '${req.body.address}', dateListed = '${req.body.dateListed}', isAvailable = ${req.body.isAvailable}, distanceToCampus = ${req.body.distanceToCampus}, propManUser = '${req.body.propManUser}' WHERE propertyID = ${req.query.id}`;
+
+    db.query(sql, (err, result) => {
+      if (err) {
+        console.log('MySQL query error: ', err);
+        return res.status(500).send('Internal Server Error');
+      }
+
+      else if (result.length === 0) return res.status(404).send('Property not found!');
+
+      return res.json('Property info updated!');
+    });
+  })
+  // delete property listing
+  .delete(async (req, res) => {
+
+    const sql = `DELETE FROM PropertyListing WHERE propertyID = ${req.query.id}`;
+
+    db.query(sql, (err, result) => {
+      if (err) {
+        console.log('MySQL query error: ', err);
+        return res.status(500).send('Internal Server Error');
+      }
+
+      else if (result.length === 0) return res.status(404).send('Property not found!');
+
+      return res.json('Property deleted!');
+    });
+  });
+
+
+// property showing functionality
+router.route('/showing')
+  // get a property showing's info
+  .get(async (req, res) => {
+
+    const sql = `SELECT * FROM PropertyShowing WHERE bookingDate = '${req.query.date}' AND bookingTime = '${req.query.time}' AND propertyID = '${req.query.id}' AND tenantUser = '${req.query.user}'`;
+
+    db.query(sql, (err, result) => {
+      if (err) {
+        console.log('MySQL query error: ', err);
+        return res.status(500).send('Internal Server Error');
+      }
+
+      else if (result.length === 0) return res.status(404).send('Showing not found!');
+
+      return res.json(result);
+    });
+  })
+  // add new property showing
+  .post(async (req, res) => {
+
+    const sql = `INSERT INTO PropertyShowing (bookingDate, bookingTime, propertyID, tenantUser) 
+                  VALUES ('${req.body.bookingDate}', '${req.body.bookingTime}', ${req.body.propertyID}, '${req.body.tenantUser}')`;
+
+    db.query(sql, (err, result) => {
+      if (err) {
+        console.log('MySQL query error: ', err);
+        return res.status(500).send('Internal Server Error');
+      }
+
+      return res.json('Showing booked!');
+    });
+  })
+  // update a property showing's info
+  .put(async (req, res) => {
+
+    const sql = `UPDATE PropertyShowing SET bookingDate = '${req.body.bookingDate}', bookingTime = '${req.body.bookingTime}', propertyID = ${req.body.propertyID}, tenantUser = '${req.body.tenantUser}' WHERE showingID = ${req.query.id}`;
+
+    db.query(sql, (err, result) => {
+      if (err) {
+        console.log('MySQL query error: ', err);
+        return res.status(500).send('Internal Server Error');
+      }
+
+      else if (result.length === 0) return res.status(404).send('Showing not found!');
+
+      return res.json('Showing updated!');
+    });
+  })
+  // delete a property showing
+  .delete(async (req, res) => {
+
+    const sql = `DELETE FROM PropertyShowing WHERE bookingDate = '${req.query.date}' AND bookingTime = '${req.query.time}' AND propertyID = '${req.query.id}' AND tenantUser = '${req.query.user}'`;
+
+    db.query(sql, (err, result) => {
+      if (err) {
+        console.log('MySQL query error: ', err);
+        return res.status(500).send('Internal Server Error');
+      }
+
+      else if (result.length === 0) return res.status(404).send('Showing not found!');
+
+      return res.json('Showing deleted!');
+    });
+  });
+
+
+// filtering properties: price range, numBedrooms, numBathrooms, propertyType, distanceToCampus, isAvailable = 1.
+router.route('/property/filter')
+  // get property listings from user params
+  .get(async (req, res) => {
+
+    let sql = `SELECT * FROM PropertyListing WHERE isAvailable = 1`;
+    let params = []
+
+    if (req.query.minPrice) {
+      sql += ' AND price >= ?';
+      params.push(req.query.minPrice);
+    }
+
+    if (req.query.maxPrice) {
+      sql += ' AND price <= ?';
+      params.push(req.query.maxPrice);
+    }
+
+    if (req.query.numBedrooms) {
+      sql += ' AND numBedrooms = ?';
+      params.push(req.query.numBedrooms);
+    }
+
+    if (req.query.numBathrooms) {
+      sql += ' AND numBathrooms = ?';
+      params.push(req.query.numBathrooms);
+    }
+
+    if (req.query.propertyType) {
+      sql += ' AND propertyType = ?';
+      params.push(req.query.propertyType);
+    }
+
+    if (req.query.distanceToCampus) {
+      sql += ' AND distanceToCampus <= ?';
+      params.push(req.query.distanceToCampus);
+    }
+
+    db.query(sql, params, (err, result) => {
+      if (err) {
+        console.log('MySQL query error: ', err);
+        return res.status(500).send('Internal Server Error');
+      }
+
+      else if (result.length === 0) return res.status(404).send('No properties found!');
+
+      return res.json(result);
+    });
+  });
+
+
+// messaging functionality
+// router.route('/message')
+//   .get(async (req, res) => {
+
+//   })
+//   .post(async (req, res) => {
+//     const sql = `INSERT INTO Message (subject, message, sendDate, sendTime, tenantUser, propManUser, tenantSenderBool) 
+//     VALUES ('${req.body.subject}', '${req.body.message}', '${req.body.sendDate}')`;
+
+
+//   })
+
+// app routing
 app.use('/api/rental', router);
+
 
 // Start the server
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
-

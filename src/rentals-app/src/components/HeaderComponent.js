@@ -24,9 +24,9 @@ function HeaderComponent() {
                 Book a Showing
                 </Link>
               </Nav.Link>
-              <Nav.Link href = '/public-lists'>
-              <Link Lists to = '/public-lists'>
-                Option 2
+              <Nav.Link href = '/property-listing'>
+              <Link Lists to = '/property-listing'>
+                Property Listings
                 </Link>
               </Nav.Link>
               <Nav.Link href = '/hero-search'>

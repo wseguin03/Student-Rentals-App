@@ -31,7 +31,7 @@ const LandingPageComponent = () => {
                             </Link>
                        
                          
-                          <Link to="/properties">
+                          <Link to="/property-listings">
                                   <Button id="property-btn"variant="primary">View Properties</Button>
                               </Link>
                        
