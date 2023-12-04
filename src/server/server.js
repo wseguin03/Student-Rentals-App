@@ -41,7 +41,7 @@ app.get('/data', (req, res) => {
 // Create an instance of express
 
 // Define a port
-const port = 3000;
+const port = 5000;
 
 // Define a basic route
 app.get('/', (req, res) => {
