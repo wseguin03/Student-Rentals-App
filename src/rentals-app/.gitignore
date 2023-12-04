@@ -4,10 +4,10 @@
 /node_modules
 /.pnp
 .pnp.js
-
+# ./src/extra
 # testing
 /coverage
-
+/extra/server
 # production
 /build
 

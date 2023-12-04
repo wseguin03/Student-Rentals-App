@@ -1,11 +1,46 @@
-import React from 'react'
-import './LandingPageComponent.css'
-import {Container} from 'react-bootstrap'
-const LandingPageCompoent = () => {
-  return (
-      <div className='landing-page-main'>LandingPageCompoent</div>
+import React, { useEffect, useState } from 'react';
+import './LandingPageComponent.css';
+import { Container, Button, Row } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 
-  )
+const LandingPageComponent = () => {
+    const userInfo = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : null;
+    console.log(userInfo);
+    
+    return (
+        <div className='landing-page-main d-flex align-items-center justify-content-center'>
+            <Container className='login-box'>
+                <Row>
+                    <h5>Welcome to Rental-Central, a place for all your student rentals.</h5>
+                </Row>
+
+                {!userInfo ? (
+                    <Row>
+                        <Link to="/login">
+                            <Button variant="primary" >Login</Button>
+                        </Link>
+                    </Row>
+                ) : (
+                    <>
+                        <Row>
+                            <h6>Welcome {userInfo.username}!</h6>
+                        </Row>
+                        <Row>
+                            <Link to="/showing">
+                                <Button variant="primary">Book Property Showing</Button>
+                            </Link>
+                       
+                         
+                          <Link to="/properties">
+                                  <Button id="property-btn"variant="primary">View Properties</Button>
+                              </Link>
+                       
+                            </Row>
+                    </>
+                )}
+            </Container>
+        </div>
+    );
 }
 
-export default LandingPageCompoent
+export default LandingPageComponent;

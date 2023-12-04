@@ -9,3 +9,19 @@
     background-position: center;
     background-image: url('/assets/ediwestern.jpg');
 }
+.login-box {
+    height: 20%;
+    width: 30%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background-color: white;
+    border-radius: 10px;
+    flex-direction: column;
+    padding:25px;
+    text-align: center;
+}
+#property-btn{
+    margin-left: 10px;
+}
