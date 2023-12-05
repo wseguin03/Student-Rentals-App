@@ -13,7 +13,9 @@ function App() {
         <Route path="/" element={<LandingPageComponent />} />
         <Route path="/showing" element={<ShowingComponent />} />
         <Route path="/login" element={<LoginComponent />} />
-        <Route path = 'message' element = {<MessageComponent/>}/>
+        <Route path = '/message' element = {<MessageComponent/>}/>
+        <Route path="/message/:propertyID" element={<MessageComponent/>} />
+
       </Routes>
     </BrowserRouter>
   );

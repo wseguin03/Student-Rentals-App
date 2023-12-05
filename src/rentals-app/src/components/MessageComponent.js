@@ -3,17 +3,20 @@ import { Container, Form, Button, Dropdown, Row,Col, ListGroup } from 'react-boo
 import MainScreenComponent from './MainScreenComponent';
 import { useState } from 'react';
 import axios from 'axios';
+import { useParams } from 'react-router-dom';
 const MessageComponent = () => {
     const userInfo = JSON.parse(localStorage.getItem('userInfo'))
     const [tenantSenderBool, setTenantSenderBool] = useState(userInfo.userType == 'Tenant' ? 1 : 0);
-
     const [subject, setSubject] = useState('');
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState([]);
 
     const [tenantUser, setTenantUser] = useState('');
     const [propManUser, setPropManUser] = useState('');
-    
+    const [propertyInfo , setPropertyInfo] = useState([]);
+    const {propertyID} = useParams();
+
+
 
 
     const handleSubmit = async (e) => {
@@ -25,7 +28,7 @@ const MessageComponent = () => {
         // console.log(sendDate);
         // console.log(sendTime);
         try {
-            const response = await axios.post('api/rental/message', {
+            const response = await axios.post('http://localhost:3000/api/rental/message', {
                 subject: subject,
                 message: message,
                 sendDate: sendDate,
@@ -44,9 +47,9 @@ const MessageComponent = () => {
 
 const fetchMessages = async (tenantSenderBool) => {
 console.log(userInfo.username)
-console.log(tenantSenderBool)
+// console.log(tenantSenderBool)
     try {
-        const response = await axios.get('api/rental/message', {
+        const response = await axios.get('http://localhost:3000/api/rental/message', {
             params: {
                 username: userInfo.username,
                 tenantSenderBool: tenantSenderBool,
@@ -59,8 +62,42 @@ console.log(tenantSenderBool)
         console.error('Failed to fetch messages:', error);
     }
 };
+
+const fetchPropertyInfo = async (propertyID) => {
+   
+        try {
+            const response = await axios.get(`http://localhost:3000/api/rental/property?id=${propertyID}`, {
+                params: {
+                    propertyID: propertyID,
+                },
+            });
+    
+            setPropertyInfo(response.data);
+            console.log(response.data)
+        } catch (error) {
+            console.error('Failed to fetch property info:', error);
+        }
+    };
+
+
+useEffect(() => {
+    if (propertyID)
+    fetchPropertyInfo(propertyID);
+   
+
+
+}, [propertyID]);
+
+useEffect(() => {
+    if (propertyInfo.length > 0) {
+        setPropManUser(propertyInfo[0].propManUser);
+        setSubject(`Regarding proeperty at:  ${propertyInfo[0].address}`);
+    }
+}, [propertyInfo]);
+
 useEffect(() => {
     if(userInfo){
+        console.log(tenantSenderBool)
         setTenantUser(userInfo.username)
         fetchMessages(tenantSenderBool);
 

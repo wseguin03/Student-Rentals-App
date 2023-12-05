@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { Container, Form, Dropdown, Button, Card, Row, Col} from 'react-bootstrap';
 import MainScreenComponent from './MainScreenComponent';
 import axios from 'axios';
+import './ShowingComponent.css';
+import MessageComponent from './MessageComponent';
+import ReactDOM from 'react-dom';
 
 function ShowingComponent() {
     const [time, setTime] = useState('');
@@ -14,6 +17,7 @@ function ShowingComponent() {
     const userInfo = JSON.parse(localStorage.getItem('userInfo'));
     const [userData, setUserData] = useState(null);
     const [properties, setProperties] = useState([]);
+    const [showMessageComponent, setShowMessageComponent] = useState(false);
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -63,7 +67,6 @@ useEffect(() => {
     console.log(date);
 }, [time, date]);
 
-
 const fetchFilteredProperties = async () => {
     try {
         const response = await axios.get('api/rental/property/filter', {
@@ -98,7 +101,7 @@ const bookShowing = async (propertyID) => {
     try {
         const response = await axios.post('api/rental/showing', {
             bookingDate: date,
-            bookingTime: time,
+            bookingTime: '9:30:00',
             propertyID: propertyID,
             tenantUser: userInfo.username, // replace with actual tenant user
         });
@@ -200,7 +203,7 @@ const bookShowing = async (propertyID) => {
                                     </Form>
                                         <Row>
                                             {properties.map((property) => (
-                                                <Col md={3} key={property.propertyID}>
+                                                <Col md={4} key={property.propertyID}>
                                                     <Card style={{ width: '18rem' }}>
                                                         <Card.Body>
                                                             <Card.Title>{property.propertyType}</Card.Title>
@@ -211,7 +214,9 @@ const bookShowing = async (propertyID) => {
                                                                 Bathrooms: {property.numBathrooms} <br />
                                                                 Distance to Campus: {property.distanceToCampus}km
                                                             </Card.Text>
-                                                            <Button variant="primary" onClick={() => bookShowing(property.propertyID)}>Book a Showing</Button>                                                        </Card.Body>
+                                                            <Button variant="primary" onClick={() => bookShowing(property.propertyID)}>Book a Showing</Button>
+                                                            <Button className='submit-btn' href = {`/message/${property.propertyID}`}variant="primary" onClick={() => setShowMessageComponent(true)}>Send Inquiry</Button>
+                                                            </Card.Body>
                                                     </Card>
                                                     <br></br>
                                                 </Col>
