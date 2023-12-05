@@ -32,7 +32,9 @@ function LoginComponent() {
           localStorage.setItem('userInfo', JSON.stringify(data));
       
           setLoading(false)
-          navigate('/') // Redirect to '/home'
+          navigate('/').then(() => {
+            window.location.reload();
+          });          
         //   setError(false)
           setLoginState(true);
         //   navigate('/') // Redirect to '/'

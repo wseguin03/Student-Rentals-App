@@ -19,9 +19,15 @@
     background-color: white;
     border-radius: 10px;
     flex-direction: column;
-    padding:25px;
+    /* padding:10px; */
     text-align: center;
 }
 #property-btn{
     margin-left: 10px;
+}
+.register-btn{
+    margin-left: 10px;
+}
+.login-box h5{
+    padding: 10px;
 }

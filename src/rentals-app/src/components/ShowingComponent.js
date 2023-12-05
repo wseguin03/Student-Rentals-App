@@ -206,17 +206,18 @@ const bookShowing = async (propertyID) => {
                                                 <Col md={4} key={property.propertyID}>
                                                     <Card style={{ width: '18rem' }}>
                                                         <Card.Body>
+                                                            <Card.Img variant="top" src={property.imgSrc} style={{ width: '100px' }} />
                                                             <Card.Title>{property.propertyType}</Card.Title>
                                                             <Card.Subtitle className="mb-2 text-muted">{property.address}</Card.Subtitle>
                                                             <Card.Text>
-                                                                Price: {property.price} <br />
+                                                                Price: ${property.price}/month <br />
                                                                 Bedrooms: {property.numBedrooms} <br />
                                                                 Bathrooms: {property.numBathrooms} <br />
                                                                 Distance to Campus: {property.distanceToCampus}km
                                                             </Card.Text>
                                                             <Button variant="primary" onClick={() => bookShowing(property.propertyID)}>Book a Showing</Button>
                                                             <Button className='submit-btn' href = {`/message/${property.propertyID}`}variant="primary" onClick={() => setShowMessageComponent(true)}>Send Inquiry</Button>
-                                                            </Card.Body>
+                                                        </Card.Body>
                                                     </Card>
                                                     <br></br>
                                                 </Col>

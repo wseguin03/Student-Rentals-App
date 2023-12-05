@@ -71,7 +71,20 @@ router.route('/login')
     });
   })
 
+  router.route('/register')
+  .post(async (req, res) => {
+    const sql = `IF EXISTS SELECT 1 FROM ${req.body.userType} WHERE username = '${req.body.username}'`;
+    
+    db.query(sql, (err, result) => {
+      if (err) {
+        console.log('MySQL query error: ', err);
 
+        return res.status(500).send('Internal Server Error');
+      }
+
+      return res.json('Username available!');
+    })
+  });
 // tenant functionality
 router.route('/tenant')
   // get tenant info
@@ -262,7 +275,9 @@ router.route('/property/filter')
   // get property listings from user params
   .get(async (req, res) => {
 
-    let sql = `SELECT * FROM PropertyListing WHERE isAvailable = 1`;
+    let sql = `SELECT p.*, pi.imgName, pi.imgSrc FROM PropertyListing p LEFT JOIN PropertyImage pi ON p.propertyID = pi.propertyID WHERE isAvailable = 1`;
+
+    //let sql = `SELECT * FROM PropertyListing WHERE isAvailable = 1`;
     let params = []
 
     if (req.query.minPrice) {
@@ -306,21 +321,19 @@ router.route('/property/filter')
       return res.json(result);
     });
   });
-
-
-
-router.route('/message')
+  router.route('/message')
   .get(async (req, res) => {
     let sql;
     const username = req.query.username;
     const tenantSenderBool = req.query.tenantSenderBool == 1 ? true : false;
-   
-    
-    if(tenantSenderBool){
-      sql = `SELECT * FROM Message WHERE tenantUser = ? AND tenantSenderBool = 0`;
-    } 
-    else{
-      sql = `SELECT * FROM Message WHERE propManUser = ? AND tenantSenderBool = 1`;
+
+    if (tenantSenderBool) {
+      // sql = `SELECT * FROM Message WHERE tenantUser = ? AND tenantSenderBool = 1`;
+      sql = `SELECT Message.*, Tenant.fName, Tenant.lName, Tenant.email, Tenant.phoneNum FROM Message INNER JOIN Tenant ON Message.tenantUser = Tenant.username WHERE Message.tenantUser = ? AND Message.tenantSenderBool = 0`;
+    }
+    else {
+      // sql = `SELECT * FROM Message WHERE propManUser = ? AND tenantSenderBool = 0`;
+      sql = `SELECT Message.*, PropertyManager.fName, PropertyManager.lName, PropertyManager.email, PropertyManager.phoneNum FROM Message INNER JOIN PropertyManager ON Message.propManUser = PropertyManager.username WHERE Message.propManUser = ? AND Message.tenantSenderBool = 1`;
     }
 
     db.query(sql, [username], (err, result) => {
@@ -328,31 +341,24 @@ router.route('/message')
         console.log('MySQL query error: ', err);
         return res.status(500).send('Internal Server Error');
       }
-      // console.log(result);
+      console.log(result);
       return res.json(result);
     });
   })
-
   .post(async (req, res) => {
-
-    const sql = `INSERT INTO Message (subject, message, sendDate, sendTime, tenantUser, propManUser, tenantSenderBool)
-
+    const sql = `INSERT INTO Message (subject, message, sendDate, sendTime, tenantUser, propManUser, tenantSenderBool) 
     VALUES ('${req.body.subject}', '${req.body.message}', '${req.body.sendDate}', '${req.body.sendTime}', '${req.body.tenantUser}', '${req.body.propManUser}', ${req.body.tenantSenderBool})`;
 
     db.query(sql, (err, result) => {
-
       if (err) {
-
         console.log('MySQL query error: ', err);
-
         return res.status(500).send('Internal Server Error');
-
       }
-    return res.json('Message sent!');
 
+      return res.json('Message sent!');
     });
-
   });
+
 
 // app routing
 app.use('/api/rental', router);

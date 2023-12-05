@@ -19,41 +19,45 @@ function HeaderComponent() {
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
-        {userInfo ? (
-          <Nav>
-            <Nav.Link href = '/showing'>
-              <Link to = '/showing'>
-                Book a Showing
-                </Link>
-              </Nav.Link>
-              <Nav.Link href = '/property-listing'>
-              <Link Lists to = '/property-listing'>
-                Property Listings
-                </Link>
-              </Nav.Link>
-              <Nav.Link href = '/message'>
+        {userInfo && (
+          <>
+            {userInfo.userType == 'Tenant' && (
+              <Nav>
+                <Nav.Link href='/showing'>
+                  <Link to='/showing'>
+                    Book a Showing
+                  </Link>
+                </Nav.Link>
+              </Nav>
+            )}
+            <Nav.Link href = '/message'>
               <Link to = '/message'>
                 Messages
-                </Link>
-              </Nav.Link>
+              </Link>
+            </Nav.Link>
+            {userInfo.userType == 'propertyManager' && (
+              <Nav>
+                <Nav.Link href='/my-listings'>
+                  <Link to='/my-listings'>
+                    View My Listings
+                  </Link>
+                </Nav.Link>
+              </Nav>
+            )}
             <NavDropdown title="More" id="basic-nav-dropdown">
               <NavDropdown.Item href="/my-profile">My Profile</NavDropdown.Item>
               <NavDropdown.Item
-               onClick={()=>{
-                localStorage.removeItem('userInfo')
-                // history.push('/')
-                window.location.reload()
+                onClick={()=>{
+                  localStorage.removeItem('userInfo')
+                  window.location.reload()
                 }}
                 href="/"
-            >
+              >
                 Logout
               </NavDropdown.Item>
-            
             </NavDropdown>
-           
-           
-          </Nav>
-  ):null}
+          </>
+        )}
         </Navbar.Collapse>
       </Container>
     </Navbar>

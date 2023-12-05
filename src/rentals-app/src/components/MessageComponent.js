@@ -47,7 +47,7 @@ const MessageComponent = () => {
 
 const fetchMessages = async (tenantSenderBool) => {
 console.log(userInfo.username)
-// console.log(tenantSenderBool)
+console.log(tenantSenderBool)
     try {
         const response = await axios.get('http://localhost:3000/api/rental/message', {
             params: {
@@ -97,8 +97,14 @@ useEffect(() => {
 
 useEffect(() => {
     if(userInfo){
-        console.log(tenantSenderBool)
-        setTenantUser(userInfo.username)
+        if (userInfo.userType == 'Tenant'){
+            setTenantUser(userInfo.username);
+        }
+        else{
+            setTenantUser('');
+            setPropManUser(userInfo.username);
+        }
+        // setTenantUser(userInfo.username ? userInfo.username : '')
         fetchMessages(tenantSenderBool);
 
     }
@@ -126,7 +132,7 @@ useEffect(() => {
 
             <Form.Group controlId="formTenantUser">
                 <Form.Label>Tenant User</Form.Label>
-                <Form.Control type="text" value={tenantUser} disabled = "true" onChange={(e) => setTenantUser(e.target.value)} />
+                <Form.Control type="text" value={tenantUser}  onChange={(e) => setTenantUser(e.target.value)} />
             </Form.Group>
 
             <Form.Group controlId="formPropManUser">
@@ -138,9 +144,6 @@ useEffect(() => {
                 Send Message
             </Button>
         </Form>
-
-
-
            </MainScreenComponent>
          </Col>
          <Col md = {6}>
@@ -150,14 +153,26 @@ useEffect(() => {
             {messages.length>0 ? null : <h3>No Messages</h3>}
             {messages.map((message) => (
                 <>
-                    <ListGroup.Item key={message.id}>
-                        <h5>{message.subject}</h5>
-                        <p>{message.message}</p>
-                        <small>Sent by: {message.tenantSenderBool ? message.tenantUser : message.propManUser}</small>
+                    <Row>
+                        <ListGroup.Item key={message.id}>
+                            <Row>
+                                <Col md={6}>
+                                    <h5>{message.subject}</h5>
+                                    <p>{message.message}</p>
+                                    <small>Sent by: {message.tenantSenderBool ? message.tenantUser : message.propManUser}</small>
+                                    <br></br>
+                                    <small>Sent on {message.sendDate.split('T')[0]} at {message.sendTime}</small>
+                                </Col>
+                                <Col md={6}>
+                                    <h5>Sender Info</h5>
+                                    <p>Full Name: {message.fName.charAt(0).toUpperCase() + message.fName.slice(1)} {message.lName.charAt(0).toUpperCase() + message.lName.slice(1)}</p>                                    <small>Phone Number: {message.phoneNum}</small>
+                                    <br></br>
+                                    <small>Email: {message.email}</small>
+                                </Col>
+                            </Row>
+                        </ListGroup.Item>
                         <br></br>
-                        <small>Sent on {message.sendDate.split('T')[0]} at {message.sendTime}</small>
-                    </ListGroup.Item>
-                    <br></br>
+                    </Row>
                 </>
             ))}
 

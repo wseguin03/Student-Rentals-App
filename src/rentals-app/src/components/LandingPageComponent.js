@@ -19,6 +19,9 @@ const LandingPageComponent = () => {
                         <Link to="/login">
                             <Button variant="primary" >Login</Button>
                         </Link>
+                        <Link to="/register">
+                            <Button className = 'register-btn'variant="primary" >Register</Button>
+                        </Link>
                     </Row>
                 ) : (
                     <>
