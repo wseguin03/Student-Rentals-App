@@ -5,6 +5,7 @@ import axios from 'axios';
 
 function ShowingComponent() {
     const [time, setTime] = useState('');
+    const [date, setDate] = useState(''); 
     const [propertyType, setPropertyType] = useState('');
     const [priceRange, setPriceRange] = useState('');
     const [numBedrooms, setNumBedrooms] = useState('');
@@ -52,14 +53,15 @@ function ShowingComponent() {
             setDistanceToCampus(selectedKey);
         }
     };
-// useEffect(() => {
-//     console.log(propertyType);
-//     console.log(priceRange);
-//     console.log(numBedrooms);
-//     console.log(numBathrooms);
-//     console.log(distanceToCampus);
-
-// }, [propertyType, priceRange, numBedrooms, numBathrooms, distanceToCampus]);
+useEffect(() => {
+    // console.log(propertyType);
+    // console.log(priceRange);
+    // console.log(numBedrooms);
+    // console.log(numBathrooms);
+    // console.log(distanceToCampus);
+    console.log(time);
+    console.log(date);
+}, [time, date]);
 
 
 const fetchFilteredProperties = async () => {
@@ -87,6 +89,27 @@ useEffect(() => {
     fetchFilteredProperties();
 }, [priceRange, numBedrooms, numBathrooms, propertyType, distanceToCampus]);
 
+
+const bookShowing = async (propertyID) => {
+    console.log(date)
+    console.log(time)
+    console.log(propertyID)
+    console.log(userInfo.username)
+    try {
+        const response = await axios.post('api/rental/showing', {
+            bookingDate: date,
+            bookingTime: time,
+            propertyID: propertyID,
+            tenantUser: userInfo.username, // replace with actual tenant user
+        });
+
+        console.log(response.data);
+    } catch (error) {
+        console.error('Failed to book showing:', error);
+    }
+};
+
+
     return (
         <Container>
             <MainScreenComponent title='Book a Showing'>
@@ -97,7 +120,7 @@ useEffect(() => {
                     </Form.Group>
                     <Form.Group controlId="formDate">
                         <Form.Label>Date</Form.Label>
-                        <Form.Control type="date" />
+                        <Form.Control type="date" onSelect={(e) => setDate(e.target.value)}/>
                     </Form.Group>
                     <Form.Group controlId="formPropertyType">
                         <Form.Label>Property Type</Form.Label>
@@ -107,7 +130,7 @@ useEffect(() => {
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                                 <Dropdown.Item eventKey="Town house">Town house</Dropdown.Item>
-                                <Dropdown.Item eventKey="Appartment">Apartment</Dropdown.Item>
+                                <Dropdown.Item eventKey="Apartment">Apartment</Dropdown.Item>
                                 <Dropdown.Item eventKey="House">House</Dropdown.Item>
                             </Dropdown.Menu>
                         </Dropdown>
@@ -188,8 +211,7 @@ useEffect(() => {
                                                                 Bathrooms: {property.numBathrooms} <br />
                                                                 Distance to Campus: {property.distanceToCampus}km
                                                             </Card.Text>
-                                                            <Button variant="primary">Book a Showing</Button>
-                                                        </Card.Body>
+                                                            <Button variant="primary" onClick={() => bookShowing(property.propertyID)}>Book a Showing</Button>                                                        </Card.Body>
                                                     </Card>
                                                     <br></br>
                                                 </Col>
