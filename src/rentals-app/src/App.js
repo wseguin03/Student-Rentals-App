@@ -4,6 +4,7 @@ import LandingPageComponent from './components/LandingPageComponent';
 import HeaderComponent from './components/HeaderComponent';
 import ShowingComponent from './components/ShowingComponent';
 import LoginComponent from './components/LoginComponent';
+import MessageComponent from './components/MessageComponent';
 function App() {
   return (
     <BrowserRouter>
@@ -12,6 +13,7 @@ function App() {
         <Route path="/" element={<LandingPageComponent />} />
         <Route path="/showing" element={<ShowingComponent />} />
         <Route path="/login" element={<LoginComponent />} />
+        <Route path = 'message' element = {<MessageComponent/>}/>
       </Routes>
     </BrowserRouter>
   );

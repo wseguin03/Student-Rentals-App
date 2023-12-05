@@ -7,7 +7,8 @@ import NavDropdown from 'react-bootstrap/NavDropdown';
 import { useHistory } from 'react-router-dom';
 import {Link} from 'react-router-dom'
 function HeaderComponent() {
-   
+   const userInfo = JSON.parse(localStorage.getItem('userInfo'))
+  
   return (
     <Navbar expand="lg" className="bg-body-tertiary">
       <Container>
@@ -18,6 +19,7 @@ function HeaderComponent() {
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
+        {userInfo ? (
           <Nav>
             <Nav.Link href = '/showing'>
               <Link to = '/showing'>
@@ -29,9 +31,9 @@ function HeaderComponent() {
                 Property Listings
                 </Link>
               </Nav.Link>
-              <Nav.Link href = '/hero-search'>
-              <Link to = '/hero-search'>
-                Option 3
+              <Nav.Link href = '/message'>
+              <Link to = '/message'>
+                Messages
                 </Link>
               </Nav.Link>
             <NavDropdown title="More" id="basic-nav-dropdown">
@@ -51,6 +53,7 @@ function HeaderComponent() {
            
            
           </Nav>
+  ):null}
         </Navbar.Collapse>
       </Container>
     </Navbar>

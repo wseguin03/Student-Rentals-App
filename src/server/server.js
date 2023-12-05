@@ -1,4 +1,5 @@
 // Import the express library
+const { match } = require('assert');
 const express = require('express');
 const mysql = require('mysql2');
 const db_name = 'rentals'; // **********change based on your database name************
@@ -66,7 +67,7 @@ router.route('/login')
 
       else if (result[0].password !== req.body.password) return res.status(401).send('Incorrect password!');
 
-      return res.json('Login successful!');
+      return res.json({userType: req.body.userType, username: result[0].username, message: 'Login Successful!'});
     });
   })
 
@@ -307,17 +308,51 @@ router.route('/property/filter')
   });
 
 
-// messaging functionality
-// router.route('/message')
-//   .get(async (req, res) => {
 
-//   })
-//   .post(async (req, res) => {
-//     const sql = `INSERT INTO Message (subject, message, sendDate, sendTime, tenantUser, propManUser, tenantSenderBool) 
-//     VALUES ('${req.body.subject}', '${req.body.message}', '${req.body.sendDate}')`;
+router.route('/message')
+  .get(async (req, res) => {
+    let sql;
+    const username = req.query.username;
+    const tenantSenderBool = req.query.tenantSenderBool == 1 ? true : false;
+   
+    
+    if(tenantSenderBool){
+      sql = `SELECT * FROM Message WHERE tenantUser = ? AND tenantSenderBool = 0`;
+    } 
+    else{
+      sql = `SELECT * FROM Message WHERE propManUser = ? AND tenantSenderBool = 1`;
+    }
 
+    db.query(sql, [username], (err, result) => {
+      if (err) {
+        console.log('MySQL query error: ', err);
+        return res.status(500).send('Internal Server Error');
+      }
+      // console.log(result);
+      return res.json(result);
+    });
+  })
 
-//   })
+  .post(async (req, res) => {
+
+    const sql = `INSERT INTO Message (subject, message, sendDate, sendTime, tenantUser, propManUser, tenantSenderBool)
+
+    VALUES ('${req.body.subject}', '${req.body.message}', '${req.body.sendDate}', '${req.body.sendTime}', '${req.body.tenantUser}', '${req.body.propManUser}', ${req.body.tenantSenderBool})`;
+
+    db.query(sql, (err, result) => {
+
+      if (err) {
+
+        console.log('MySQL query error: ', err);
+
+        return res.status(500).send('Internal Server Error');
+
+      }
+    return res.json('Message sent!');
+
+    });
+
+  });
 
 // app routing
 app.use('/api/rental', router);
