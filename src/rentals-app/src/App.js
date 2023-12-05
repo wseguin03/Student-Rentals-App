@@ -6,6 +6,7 @@ import ShowingComponent from './components/ShowingComponent';
 import LoginComponent from './components/LoginComponent';
 import MessageComponent from './components/MessageComponent';
 import RegisterComponent from './components/RegisterComponent';
+import ViewAllPMComponent from './components/ViewAllPMComponent';
 function App() {
   return (
     <BrowserRouter>
@@ -18,6 +19,8 @@ function App() {
 
         <Route path = '/message' element = {<MessageComponent/>}/>
         <Route path="/message/:propertyID" element={<MessageComponent/>} />
+        <Route path="/managers" element={<ViewAllPMComponent/>} />
+
 
       </Routes>
     </BrowserRouter>

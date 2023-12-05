@@ -4,7 +4,7 @@ const express = require('express');
 const mysql = require('mysql2');
 const db_name = 'rentals'; // **********change based on your database name************
 const router = express.Router();
-
+const port = 5000;
 const db = mysql.createConnection({
   
   host: "localhost",
@@ -45,7 +45,7 @@ app.get('/data', (req, res) => {
 // Create an instance of express
 
 // Define a port
-const port = 5000;
+
 
 app.use(express.json());
 
@@ -358,11 +358,29 @@ router.route('/property/filter')
       return res.json('Message sent!');
     });
   });
+  router.route('/manager/num-properties')
+  .get(async (req, res) => {
+    const sql = `SELECT pm.username, 
+    pm.fName, 
+    pm.lName, (
+      SELECT COUNT(*) 
+      FROM PROPERTYLISTING pl 
+      WHERE pl.propManUser = pm.username
+    ) AS numListings 
+FROM PropertyManager pm
+ORDER BY numListings DESC`;
+    db.query(sql, (err, result) => {
+      if (err) {
+        console.log('MySQL query error: ', err);
+        return res.status(500).send('Internal Server Error')
+      }
 
+      return res.json(result);
+    });
+  });
 
 // app routing
 app.use('/api/rental', router);
-
 
 // Start the server
 app.listen(port, () => {
