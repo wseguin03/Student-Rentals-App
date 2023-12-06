@@ -5,7 +5,7 @@ import axios from 'axios';
 import './ShowingComponent.css';
 import MessageComponent from './MessageComponent';
 import ReactDOM from 'react-dom';
-
+import ErrorMessage from './ErrorMessage';
 function ShowingComponent() {
     const [time, setTime] = useState('');
     const [date, setDate] = useState(''); 
@@ -18,6 +18,7 @@ function ShowingComponent() {
     const [userData, setUserData] = useState(null);
     const [properties, setProperties] = useState([]);
     const [showMessageComponent, setShowMessageComponent] = useState(false);
+    const [errorMessage, setErrorMessage] = useState(false);
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -82,6 +83,7 @@ const fetchFilteredProperties = async () => {
 
         console.log(response.data);
         setProperties(response.data);
+       
 
     } catch (error) {
         console.error('Failed to fetch filtered properties:', error);
@@ -101,10 +103,22 @@ const bookShowing = async (propertyID) => {
     try {
         const response = await axios.post('api/rental/showing', {
             bookingDate: date,
-            bookingTime: '9:30:00',
+            bookingTime: time,
             propertyID: propertyID,
             tenantUser: userInfo.username, // replace with actual tenant user
         });
+        setErrorMessage(true);
+        setTimeout(() => {
+            setErrorMessage(false);
+            setNumBathrooms('');
+            setNumBedrooms('');
+            setPriceRange('');
+            setPropertyType('');
+            setDistanceToCampus('');
+            setTime('');
+            setDate('');
+        }
+        , 2000);
 
         console.log(response.data);
     } catch (error) {
@@ -116,6 +130,8 @@ const bookShowing = async (propertyID) => {
     return (
         <Container>
             <MainScreenComponent title='Book a Showing'>
+            {errorMessage &&<ErrorMessage variant='success'>Showing Booked!</ErrorMessage>}
+
                 <Form>
                     <Form.Group controlId="formTime">
                         <Form.Label>Time</Form.Label>

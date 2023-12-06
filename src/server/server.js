@@ -208,7 +208,19 @@ router.route('/showing')
   // get a property showing's info
   .get(async (req, res) => {
 
-    const sql = `SELECT * FROM PropertyShowing WHERE bookingDate = '${req.query.date}' AND bookingTime = '${req.query.time}' AND propertyID = '${req.query.id}' AND tenantUser = '${req.query.user}'`;
+    const sql = `SELECT ps.*, 
+                        p.price, 
+                        p.propertyType, 
+                        p.address, 
+                        t.fName, 
+                        t.lName, 
+                        t.email, 
+                        t.phoneNum 
+                  FROM PropertyShowing ps 
+                  JOIN PropertyListing p ON ps.propertyID = p.propertyID 
+                  JOIN Tenant t ON ps.tenantUser = t.username 
+                  JOIN PropertyManager pm ON p.propManUser = pm.username
+                  WHERE pm.username = '${req.query.username}'`;
 
     db.query(sql, (err, result) => {
       if (err) {

@@ -4,6 +4,7 @@ import MainScreenComponent from './MainScreenComponent';
 import { useState } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
+import ErrorMessage from './ErrorMessage';
 const MessageComponent = () => {
     const userInfo = JSON.parse(localStorage.getItem('userInfo'))
     const [tenantSenderBool, setTenantSenderBool] = useState(userInfo.userType == 'Tenant' ? 1 : 0);
@@ -15,6 +16,7 @@ const MessageComponent = () => {
     const [propManUser, setPropManUser] = useState('');
     const [propertyInfo , setPropertyInfo] = useState([]);
     const {propertyID} = useParams();
+    const [error, setError] = useState(false);
 
 
 
@@ -39,6 +41,14 @@ const MessageComponent = () => {
             });
 
             console.log(response.data);
+            setError(true);
+            setTimeout(() => {
+                setError(false);
+                setSubject('');
+                setMessage('');
+                
+
+            }, 2000);
         } catch (error) {
             console.error('Failed to send message:', error);
         }
@@ -119,6 +129,8 @@ useEffect(() => {
          
          <Col md = {6}>
            <MainScreenComponent title='Send Messages'>
+           {error &&<ErrorMessage variant='success'>Message Sent!</ErrorMessage>}
+
            <Form onSubmit={handleSubmit}>
             <Form.Group controlId="formSubject">
                 <Form.Label>Subject</Form.Label>

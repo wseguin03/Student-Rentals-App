@@ -35,16 +35,22 @@ function HeaderComponent() {
                 Messages
               </Link>
             </Nav.Link>
-            {/* {userInfo.userType == 'propertyManager' && ( */}
-              <Nav>
+            {userInfo.userType == 'propertyManager' && (
+            <Nav>
+                <Nav.Link href='/showing/view'>
+                  <Link to='/showing/view'>
+                    View Booked Showings
+                  </Link>
+                </Nav.Link>
+              </Nav>
+            )} 
+            <Nav>
                 <Nav.Link href='/managers'>
                   <Link to='/managers'>
                     View Rental Central Managers
                   </Link>
                 </Nav.Link>
               </Nav>
-            {/* )} */}
-            
             <NavDropdown title="More" id="basic-nav-dropdown">
               <NavDropdown.Item href="/my-profile">My Profile</NavDropdown.Item>
               <NavDropdown.Item
