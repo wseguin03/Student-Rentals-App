@@ -19,9 +19,9 @@ const LandingPageComponent = () => {
                         <Link to="/login">
                             <Button variant="primary" >Login</Button>
                         </Link>
-                        <Link to="/register">
+                        {/* <Link to="/register">
                             <Button className = 'register-btn'variant="primary" >Register</Button>
-                        </Link>
+                        </Link> */}
                     </Row>
                 ) : (
                     <>
@@ -29,14 +29,20 @@ const LandingPageComponent = () => {
                             <h6>Welcome {userInfo.username}!</h6>
                         </Row>
                         <Row>
+                            {userInfo.userType == 'Tenant' ? (
                             <Link to="/showing">
                                 <Button variant="primary">Book Property Showing</Button>
                             </Link>
-                       
-                         
+                            ) : null}
+                             {userInfo.userType == 'propertyManager' ? (
+                            <Link to="/showing/view">
+                                <Button variant="primary">View Booked Showings</Button>
+                            </Link>
+                            ) : null}
+{/*                          
                           <Link to="/property-listings">
                                   <Button id="property-btn"variant="primary">View Properties</Button>
-                              </Link>
+                              </Link> */}
                        
                             </Row>
                     </>
